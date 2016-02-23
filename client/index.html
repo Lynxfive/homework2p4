@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        "use strict";
+    
+        var canvas;
+        var ctx;
+        var socket; 
+		var sendBufferCanvas;
+		var sendBufferCtx;
+						
+        var square = {
+            x: 0, 
+            y: 0, 
+            height: 100, 
+            width: 100,
+			color: "black"
+			// red - "#FF0000"
+        };
+		 
+		function setup(){
+			sendBufferCanvas = document.createElement("canvas");
+			sendBufferCanvas.height = 200;
+			sendBufferCanvas.width = 200;
+			sendBufferCtx = sendBufferCanvas.getContext("2d");
+			ctx.fillRect(100, 100, 200, 200); //draw to screen
+			sendBufferCtx.fillStyle = "red";
+			sendBufferCtx.fillRect(0,0,200,200); //draw to hidden buffer
+			var data = {
+				x: 300,
+				y: 300,
+				height: 200,
+				width: 200,
+				imgData: sendBufferCanvas.toDataURL() //get pixel data from canvas
+			};
+			socket.emit("draw", data);
+		}
+		
+		function handleMessage(data){
+
+			var image = new Image();
+
+			image.onload = function() {
+				ctx.save();
+				ctx.globalCompositeOperation = "source-over"; //this is default for canvas
+				ctx.drawImage(image, data.x, data.y, data.width, data.height);
+				ctx.restore();
+			};
+
+			image.src = data.imgData;
+		}
+		
+        function init() {
+            canvas = document.querySelector("#canvas");
+            ctx = canvas.getContext("2d");
+			
+
+            socket = io.connect();
+            
+			setup();
+			
+            socket.on('connect', function () {
+				console.log("connected");
+            });      
+            
+            socket.on('updatedSquares', handleMessage);
+        }
+
+      window.onload = init;
+    </script>
+</head>
+<body>
+    <canvas id="canvas" height="500" width="500">Please use an HTML 5 browser</canvas>
+</body>
+</html>

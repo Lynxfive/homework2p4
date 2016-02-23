@@ -1,0 +1,19 @@
+{
+  "name": "streamingpart4",
+  "version": "1.0.0",
+  "description": "streaming - homework 2 part 4",
+  "main": "./src/index.js",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "pretest": "jshint ./src",
+    "test": "echo \"Tests complete\""
+  },
+  "author": "Cole Cooper",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^1.4.5"
+  },
+  "devDependencies": {
+    "jshint": "^2.9.1"
+  }
+}
